@@ -1,22 +1,19 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 from chatterbot import ChatBot
 from chatterbot.trainers import ChatterBotCorpusTrainer, ListTrainer
-from flask import Flask, request, jsonify
-from flask import Flask
 from flask_cors import CORS
+from googletrans import Translator
+from deep_translator import GoogleTranslator
 
 app = Flask(__name__)
-
 CORS(app)
-# app = Flask(__name__)
-
-
 
 english_bot = ChatBot("Chatterbot", storage_adapter="chatterbot.storage.SQLStorageAdapter",
-logic_adapters = [
-    'chatterbot.logic.MathematicalEvaluation',
-    'chatterbot.logic.BestMatch'
-])
+                     logic_adapters=[
+                         'chatterbot.logic.MathematicalEvaluation',
+                         'chatterbot.logic.BestMatch'
+                     ])
+
 # training the chatbot
 small_convo = [
     'Hi there!',
@@ -341,14 +338,12 @@ def predict():
     translation = translator.translate(to_translate)
     print(translation)
     if translation.src == "en":
-
-        return jsonify({'answer':english_bot.get_response(message).text})
-    
+        return jsonify({'answer': english_bot.get_response(message).text})
     else:
         translated = GoogleTranslator(source='auto', target='en').translate(to_translate)
         res = str(english_bot.get_response(translated))
         res2 = GoogleTranslator(source='en', target=translation.src).translate(res)
-        return jsonify({'answer':res2})
+        return jsonify({'answer': res2})
   
      
      
